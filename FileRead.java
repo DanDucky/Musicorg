@@ -1,11 +1,25 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.mp3.ID3Tags;
+import org.apache.tika.parser.mp3.Mp3Parser;
+import org.apache.tika.sax.BodyContentHandler;
+
+import org.xml.sax.ContentHandler;
 
 public class FileRead {
 	private String originalPath;
 	private char[] folderScheme;
 	private char[] fileScheme;
+	Mp3Parser parseMp3 = new Mp3Parser();
+	ParseContext parseC = new ParseContext();
+	Metadata metadataTika = new Metadata();
+	BodyContentHandler handler = new BodyContentHandler();
 	public FileRead(String path, char[] folder, char[] file) {
 		this.originalPath = path;
 		this.folderScheme = folder;
@@ -60,13 +74,16 @@ public class FileRead {
 		 */
 		for (int i = 0; i < dirIndex.length; i++) {
 			File currentFile = new File(dirIndex[i]);
+			InputStream fileInput = new FileInputStream(currentFile);
 			String fileType = "null";
 			if(!currentFile.isDirectory() && dirIndex[i].contains(".")) {
 				fileType = dirIndex[i].substring(dirIndex[i].lastIndexOf("."), dirIndex[i].length());
 			}
 			System.out.println(fileType);
 			if(fileType.equals(".mp3")) {
-				String bep = currentFile.getAlbumArtist();
+				parseMp3.parse(fileInput, handler, metadataTika, parseC);
+			} else if (fileType.equals(".flac")) {
+				
 			}
 		}
 		
